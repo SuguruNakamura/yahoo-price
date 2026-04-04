@@ -412,7 +412,9 @@
 
   // ── 履歴 ──
   function save() {
-    docRef.set({ list: records });
+    docRef.set({ list: records }).catch(err => {
+      alert('保存エラー: ' + err.message);
+    });
   }
 
   function addHistory(keyword, price, category) {
