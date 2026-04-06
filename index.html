@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yahoo Shopping! 価格調査表</title>
+  <title>Yahoo!ショッピング 価格調査</title>
   <link rel="icon" type="image/png" href="logo.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -104,9 +104,10 @@
       font-weight: bold;
     }
     .cat-btn[data-cat="ポケモンカード"].active { background: #2a1a00; border-color: #7a4a00; color: #f0b030; }
-    .cat-btn[data-cat="遊戯王"].active         { background: #1a0a2e; border-color: #5b2a8e; color: #a855f7; }
-    .cat-btn[data-cat="ゲーム機"].active        { background: #0a2020; border-color: #0e6060; color: #2dd4bf; }
-    .cat-btn[data-cat="その他"].active          { background: #1a2535; border-color: #4a90d9; color: #4a90d9; }
+    .cat-btn[data-cat="遊戯王カード"].active     { background: #1a0a2e; border-color: #5b2a8e; color: #a855f7; }
+    .cat-btn[data-cat="ワンピースカード"].active { background: #2e0a0a; border-color: #8e2a2a; color: #f87171; }
+    .cat-btn[data-cat="ゲーム"].active           { background: #0a2020; border-color: #0e6060; color: #2dd4bf; }
+    .cat-btn[data-cat="その他"].active           { background: #1a2535; border-color: #4a90d9; color: #4a90d9; }
 
     .form-header {
       display: flex;
@@ -279,9 +280,10 @@
       white-space: nowrap;
     }
     .cat-badge.ポケモンカード { background: #2a1a00; border: 1px solid #7a4a00; color: #f0b030; }
-    .cat-badge.遊戯王         { background: #1a0a2e; border: 1px solid #5b2a8e; color: #a855f7; }
-    .cat-badge.ゲーム機        { background: #0a2020; border: 1px solid #0e6060; color: #2dd4bf; }
-    .cat-badge.その他          { background: #1a2535; border: 1px solid #2a3a50; color: #6a7a8a; }
+    .cat-badge.遊戯王カード     { background: #1a0a2e; border: 1px solid #5b2a8e; color: #a855f7; }
+    .cat-badge.ワンピースカード { background: #2e0a0a; border: 1px solid #8e2a2a; color: #f87171; }
+    .cat-badge.ゲーム           { background: #0a2020; border: 1px solid #0e6060; color: #2dd4bf; }
+    .cat-badge.その他           { background: #1a2535; border: 1px solid #2a3a50; color: #6a7a8a; }
 
     .records-meta {
       display: flex;
@@ -296,7 +298,7 @@
 </head>
 <body>
 
-  <h1>Yahoo Shopping! 価格調査表</h1>
+  <h1>Yahoo!ショッピング 価格調査</h1>
   <p class="subtitle">価格＋送料が安い順で検索します</p>
 
   <div class="card">
@@ -308,8 +310,9 @@
       <label>カテゴリ</label>
       <div class="cat-btns" id="cat-btns">
         <button class="cat-btn" data-cat="ポケモンカード" onclick="selectCategory(this)">ポケモンカード</button>
-        <button class="cat-btn" data-cat="遊戯王"         onclick="selectCategory(this)">遊戯王</button>
-        <button class="cat-btn" data-cat="ゲーム機"        onclick="selectCategory(this)">ゲーム機</button>
+        <button class="cat-btn" data-cat="遊戯王カード"     onclick="selectCategory(this)">遊戯王カード</button>
+        <button class="cat-btn" data-cat="ワンピースカード" onclick="selectCategory(this)">ワンピースカード</button>
+        <button class="cat-btn" data-cat="ゲーム"           onclick="selectCategory(this)">ゲーム</button>
         <button class="cat-btn active" data-cat="その他"  onclick="selectCategory(this)">その他</button>
       </div>
     </div>
@@ -339,8 +342,9 @@
     <div class="filter-tabs" id="filter-tabs">
       <button class="filter-tab active" data-filter="全て"          onclick="setFilter(this)">全て</button>
       <button class="filter-tab"        data-filter="ポケモンカード" onclick="setFilter(this)">ポケモンカード</button>
-      <button class="filter-tab"        data-filter="遊戯王"         onclick="setFilter(this)">遊戯王</button>
-      <button class="filter-tab"        data-filter="ゲーム機"        onclick="setFilter(this)">ゲーム機</button>
+      <button class="filter-tab"        data-filter="遊戯王カード"     onclick="setFilter(this)">遊戯王カード</button>
+      <button class="filter-tab"        data-filter="ワンピースカード" onclick="setFilter(this)">ワンピースカード</button>
+      <button class="filter-tab"        data-filter="ゲーム"           onclick="setFilter(this)">ゲーム</button>
       <button class="filter-tab"        data-filter="その他"          onclick="setFilter(this)">その他</button>
     </div>
     <div id="records-list"></div>
