@@ -565,13 +565,16 @@
       return;
     }
 
-    // reorderMode は全て表示で動作
+    // reorderMode: フィルター済みリストを filter-idx で描画
     if (reorderMode) {
-      list.innerHTML = records.map((h, i) => {
+      if (!filtered.length) {
+        list.innerHTML = '<div class="records-empty">履歴がありません</div>';
+        return;
+      }
+      list.innerHTML = filtered.map((h, fi) => {
         const cat = h.category || 'その他';
         return `
-          <div class="records-item" data-idx="${i}" onclick="onItemClick(${i})">
-            <div class="records-check"><input type="checkbox" onclick="event.stopPropagation(); toggleSelectItem(${i})"></div>
+          <div class="records-item" data-filter-idx="${fi}" onclick="onItemClick(${h._fullIdx})">
             <div class="records-item-body">
               <div class="records-top">
                 <div class="records-keyword">${h.keyword.replace(/</g, '&lt;')}</div>
@@ -583,16 +586,14 @@
               </div>
             </div>
             <div class="records-item-right">
-              <button class="btn-records-edit" onclick="event.stopPropagation(); editHistory(${i})">編集</button>
-              <span class="records-arrow">›</span>
-              <span class="drag-handle" data-idx="${i}">☰</span>
+              <span class="drag-handle" data-filter-idx="${fi}">☰</span>
             </div>
           </div>`;
       }).join('');
       list.querySelectorAll('.drag-handle').forEach(handle => {
         handle.addEventListener('touchstart', e => {
           e.preventDefault();
-          startDrag(e, Number(handle.dataset.idx));
+          startDrag(e, Number(handle.dataset.filterIdx));
         }, { passive: false });
       });
       return;
@@ -698,10 +699,6 @@
   // ── 並び替えモード ──
   function enterReorderMode() {
     if (selectMode) toggleSelectMode();
-    activeFilter = '全て';
-    document.querySelectorAll('.filter-tab').forEach(b => {
-      b.classList.toggle('active', b.dataset.filter === '全て');
-    });
     reorderMode = true;
     document.getElementById('btn-select').style.display = 'none';
     document.getElementById('btn-done-reorder').style.display = '';
@@ -716,8 +713,8 @@
     renderHistory();
   }
 
-  function startDrag(e, fullIdx) {
-    const cardEl = document.querySelector(`.records-item[data-idx="${fullIdx}"]`);
+  function startDrag(e, filterIdx) {
+    const cardEl = document.querySelector(`.records-item[data-filter-idx="${filterIdx}"]`);
     if (!cardEl) return;
     const rect = cardEl.getBoundingClientRect();
     const touch = e.touches[0];
@@ -728,7 +725,7 @@
     ghost.style.width = `${rect.width}px`;
     document.body.appendChild(ghost);
     cardEl.classList.add('dragging');
-    dragState = { fullIdx, cardEl, ghost, offsetY: touch.clientY - rect.top, startY: touch.clientY, moved: false, targetIdx: null };
+    dragState = { filterIdx, cardEl, ghost, offsetY: touch.clientY - rect.top, startY: touch.clientY, moved: false, targetIdx: null };
   }
 
   function moveDrag(e) {
@@ -740,7 +737,7 @@
     if (!dragState.moved) return;
 
     const allCards = [...document.querySelectorAll('.records-item:not(.drag-ghost)')];
-    const srcIdx = dragState.fullIdx;
+    const srcIdx = dragState.filterIdx;
     const cy = touch.clientY;
     let targetIdx = allCards.length;
     for (let i = 0; i < allCards.length; i++) {
@@ -762,16 +759,28 @@
 
   function endDrag() {
     if (!dragState) return;
-    const { ghost, cardEl, fullIdx, targetIdx, moved } = dragState;
+    const { ghost, cardEl, filterIdx, targetIdx, moved } = dragState;
     ghost.remove();
     cardEl.classList.remove('dragging');
     document.querySelectorAll('.records-item:not(.drag-ghost)').forEach(c => c.style.transform = '');
     dragState = null;
     if (!moved) { exitReorderMode(); return; }
-    if (targetIdx === null || targetIdx === fullIdx) { renderHistory(); return; }
+    if (targetIdx === null || targetIdx === filterIdx) { renderHistory(); return; }
+
+    // フィルター済みリストのスナップショット
+    const filtered = records
+      .map((h, i) => ({ ...h, _fullIdx: i }))
+      .filter(h => activeFilter === '全て' || (h.category || 'その他') === activeFilter);
+
+    // フィルター内で並び替え
+    const newFiltered = [...filtered];
+    const [item] = newFiltered.splice(filterIdx, 1);
+    newFiltered.splice(targetIdx > filterIdx ? targetIdx - 1 : targetIdx, 0, item);
+
+    // フィルターアイテムが占めていたスロットに新順序で書き戻す
+    const slots = filtered.map(h => h._fullIdx);
     const newRecords = [...records];
-    const [item] = newRecords.splice(fullIdx, 1);
-    newRecords.splice(targetIdx > fullIdx ? targetIdx - 1 : targetIdx, 0, item);
+    newFiltered.forEach((h, i) => { newRecords[slots[i]] = records[h._fullIdx]; });
     records = newRecords;
     save();
     renderHistory();
