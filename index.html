@@ -170,7 +170,6 @@
     .records-section {
       width: 100%;
       max-width: 480px;
-      margin-top: 28px;
     }
 
     .records-header {
@@ -345,6 +344,40 @@
       cursor: pointer;
       white-space: nowrap;
     }
+
+    /* ── タブ ── */
+    .tab-bar {
+      display: flex;
+      width: 100%;
+      max-width: 480px;
+      margin-bottom: 20px;
+      background: #111827;
+      border: 1px solid #1e2a3a;
+      border-radius: 12px;
+      padding: 4px;
+      gap: 4px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px;
+      background: none;
+      border: none;
+      border-radius: 8px;
+      color: #4a5568;
+      font-size: 0.85rem;
+      font-weight: bold;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s;
+      letter-spacing: 0.03em;
+      text-align: center;
+    }
+    .tab-btn.active { background: #1d4ed8; color: #fff; }
+
+    .tab-panel { display: none; width: 100%; }
+    .tab-panel.active { display: flex; flex-direction: column; align-items: center; }
+
+    .records-section { margin-top: 0; }
   </style>
 </head>
 <body>
@@ -352,6 +385,12 @@
   <h1>Yahoo!ショッピング 価格調査</h1>
   <p class="subtitle">価格＋送料が安い順で検索します</p>
 
+  <div class="tab-bar">
+    <button class="tab-btn active" id="tab-btn-history" onclick="switchTab('history')">検索履歴</button>
+    <button class="tab-btn" id="tab-btn-search" onclick="switchTab('search')">新規検索</button>
+  </div>
+
+  <div id="panel-search" class="tab-panel">
   <div class="card">
     <div class="form-header">
       <span class="form-title" id="form-title">新規検索</span>
@@ -385,7 +424,9 @@
 
     <button class="btn-search" id="btn-search" onclick="search()">検索する</button>
   </div>
+  </div><!-- /panel-search -->
 
+  <div id="panel-history" class="tab-panel active">
   <div class="records-section">
     <div class="records-header">
       <h2>検索履歴</h2>
@@ -406,6 +447,7 @@
     </div>
     <div id="records-list"></div>
   </div>
+  </div><!-- /panel-history -->
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -431,6 +473,16 @@
   let editingIdx = null;
   let reorderMode = false;
   let dragState = null;
+  let activeTab = 'history';
+
+  // ── タブ切り替え ──
+  function switchTab(tab) {
+    activeTab = tab;
+    document.getElementById('tab-btn-search').classList.toggle('active', tab === 'search');
+    document.getElementById('tab-btn-history').classList.toggle('active', tab === 'history');
+    document.getElementById('panel-search').classList.toggle('active', tab === 'search');
+    document.getElementById('panel-history').classList.toggle('active', tab === 'history');
+  }
   let longPressTimer = null;
   let longPressStart = { x: 0, y: 0 };
 
@@ -656,6 +708,7 @@
     document.getElementById('btn-search').textContent = '更新する';
     document.getElementById('btn-search').classList.add('editing');
     document.getElementById('btn-cancel-edit').style.display = 'block';
+    switchTab('search');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -668,6 +721,7 @@
     document.getElementById('btn-search').textContent = '検索する';
     document.getElementById('btn-search').classList.remove('editing');
     document.getElementById('btn-cancel-edit').style.display = 'none';
+    switchTab('history');
   }
 
   function search() {
@@ -687,6 +741,7 @@
 
     addHistory(keyword, price, selectedCategory);
     openSearch(keyword, price);
+    switchTab('history');
   }
 
   function openSearch(keyword, price) {
