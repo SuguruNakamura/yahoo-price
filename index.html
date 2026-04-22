@@ -322,10 +322,12 @@
     @media (hover: hover) and (pointer: fine) {
       #records-list:not(.select-mode) .drag-handle { display: block; }
       .records-item-right { flex-direction: row; align-items: center; }
-      /* ハンドルを編集ボタンと同程度の高さに揃えることでrow内の中央ずれを最小化 */
-      .drag-handle { padding: 2px 6px; font-size: 1rem; }
-      /* 並び替えモード以外は上揃えにしてバッジと右側ボタン群の高さを合わせる */
-      #records-list:not(.reorder-mode) .records-item { align-items: flex-start; }
+      /* ハンドルの高さをバッジに合わせる */
+      .drag-handle { padding: 4px 6px; font-size: 0.65rem; }
+      /* バッジの縦paddingを編集ボタンに合わせて高さを統一 */
+      .cat-badge { padding: 4px 8px; }
+      /* 全モードで上揃えにしてバッジと右側要素の高さを合わせる */
+      .records-item { align-items: flex-start; }
     }
     .reorder-mode .btn-records-edit { display: none !important; }
     .reorder-mode .records-arrow { display: none !important; }
